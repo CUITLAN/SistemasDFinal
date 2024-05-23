@@ -29,20 +29,25 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
         >
           <span className="navbar-toggler-icon" />
         </button>
-        <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <div className="collapse navbar-collapse" id="navbarTogglerDemo01" style={{justifyContent:'space-around'}}>
           <span className="navbar-brand">Albumi</span>
-          <input
-            value={keyword}
-            onChange={(event) => setKeyword(event.target.value)}
-            className="form-control me-2"
-            type="search"
-            placeholder="¡Escribe tu Artista!"
-            aria-label="Search"
-          />
-          <button onClick={handleSearch} className="btn btn-outline-success" type="button">
-            Buscar
-          </button>
-          {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+          <div style={{display:'flex'}}>
+            <input
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              className="form-control me-2"
+              type="search"
+              placeholder="¡Escribe tu Artista!"
+              aria-label="Search"
+              style={{ width: '900px', height: '40px' }}
+            />
+            <button onClick={handleSearch} className="btn btn-outline-success me-2" type="button">
+              Buscar
+            </button>
+          </div>
+          <div style={{display:'flex'}}>
+            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+          </div>
         </div>
       </div>
     </nav>
