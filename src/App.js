@@ -1,24 +1,40 @@
 import "./App.css";
-import LoginButton from "./components/loginButton.js";
-import LogoutButton from "./components/logOutButton.js";
 import Profile from "./profile.js";
-import { useAuth0 } from "@auth0/auth0-react";
+import Navbar from "./components/NavBar.jsx";
+import { useState } from "react";
+import Card from "./components/card.jsx";
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuth0();
-
-  if (isLoading) {
-    return <h1>Is Loading</h1>
-  }
+  const [tracks, setTracks] = useState([]);
+  const [keyword, setKeyword] = useState(""); 
+  const getTracks = async () => {
+    try {
+      let data = await fetch(`https://v1.nocodeapi.com/cuitlan/spotify/NLLeDlWExOvKCbvS/search?q=${keyword}&type=track`);   //Se toma el dato de el navbar
+      let convertedData = await data.json();
+      console.log(convertedData.tracks.items);
+      setTracks(convertedData.tracks.items);
+    } catch (error) {
+      console.error("Error fetching tracks:", error);
+    }
+  };
 
   return (
-    <div className="App">
-      <h1>Pagina de Inicio</h1>
-      {isAuthenticated ? <LogoutButton /> : <LoginButton />}
-      <Profile />
-    </div>
+    <section>
+      <div className="App">
+        <Navbar getTracks={getTracks} keyword={keyword} setKeyword={setKeyword} />
+        <h1>Pságina de Iniscio</h1>
+        <Profile />
+      </div>
+      <div className="container">
+        <div className="row">
+          <div className="col"></div>
+          {tracks.map((element) => {
+            return <Card key={element.id} element={element} />;
+          })}
+        </div>
+      </div>
+    </section>
   );
 }
 
 export default App;
- 
