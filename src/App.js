@@ -26,8 +26,7 @@ function App() {
         <Profile />
       </div>
       <div className="container">
-        <div className="row">
-          <div className="col"></div>
+        <div className="row justify-content-evenly">
           {tracks.map((element) => {
             return <Card key={element.id} element={element} />;
           })}
