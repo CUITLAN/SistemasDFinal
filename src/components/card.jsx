@@ -1,5 +1,4 @@
 import React from "react";
-import guardar from "../images/bookmark-plus-fill.svg";
 import "../App.css";
 
 const Card = ({ element }) => {
