@@ -43,6 +43,7 @@ function App() {
         <Route path="/" element={<PagePrin/>} />
       </Routes>
     </>
+
   );
 }
 
