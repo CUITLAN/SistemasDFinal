@@ -22,12 +22,11 @@ function App() {
     <section>
       <div className="App">
         <Navbar getTracks={getTracks} keyword={keyword} setKeyword={setKeyword} />
-        <h1>Pságina de Iniscio</h1>
+        <h1>Página de Inicio</h1>
         <Profile />
       </div>
       <div className="container">
-        <div className="row">
-          <div className="col"></div>
+        <div className="row justify-content-evenly">
           {tracks.map((element) => {
             return <Card key={element.id} element={element} />;
           })}
