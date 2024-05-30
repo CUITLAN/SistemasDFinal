@@ -4,17 +4,31 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {Auth0Provider} from '@auth0/auth0-react'
+import { BrowserRouter } from 'react-router-dom';
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const clientId =process.env.REACT_APP_AUTH0_CLIENT_ID;
 
+const onRedirectCallback = (appState) => {
+  window.history.replaceState(
+    {},
+    document.title,
+    appState?.returnTo || window.location.pathname
+  );
+};
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Auth0Provider domain={domain} clientId={clientId} redirectUri={window.location.origin}>
-      <App/>
+    <Auth0Provider 
+      domain={domain} 
+      clientId={clientId} 
+      redirectUri={"http://localhost:3000"}
+      onRedirectCallback={onRedirectCallback}>
+      <BrowserRouter>
+        <App/>
+      </BrowserRouter>
     </Auth0Provider>
   </React.StrictMode>
 );
