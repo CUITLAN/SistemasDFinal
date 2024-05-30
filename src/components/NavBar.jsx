@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import LoginButton from "./loginButton.js";
 import LogoutButton from "./logOutButton.js";
+import { Link } from "react-router-dom";
 
 const Navbar = ({ keyword, setKeyword, getTracks }) => {
   const { isAuthenticated, isLoading } = useAuth0(); 
@@ -46,11 +47,14 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
             </button>
           </div>
           <div style={{display:'flex'}}>
-            {isAuthenticated ? <LogoutButton /> : <LoginButton />}
+            {isAuthenticated ? <LogoutButton /> : <>
+              <LoginButton />
+              <Link to="/">Inicio</Link>
+            </>}
           </div>
         </div>
       </div>
-    </nav>
+    </nav> 
   );
 };
 
