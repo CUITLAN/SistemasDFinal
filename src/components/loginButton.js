@@ -6,7 +6,14 @@ const LoginButton = () => {
     <div>
       <button
         type="button"
-        className="btn btn-outline-primary"
+        style={{
+          backgroundColor:'#094D92',
+          color: 'white',
+          border: 'none',
+          borderRadius: '10px',
+          padding: '10px 20px',
+        }}
+        //className="btn btn-outline-primary"
         onClick={() => {
           loginWithRedirect({
             appState: {
