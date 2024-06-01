@@ -51,23 +51,22 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
               </span>
             </div>
           </div>
-          <div style={{display:'flex'}}>
-            <input
-              value={keyword}
-              onChange={(event) => setKeyword(event.target.value)}
-              className="form-control me-2"
-              type="search"
-              placeholder="¡Escribe tu Artista!"
-              aria-label="Search"
-              style={{ width: '900px', height: '40px' }}
-            />
-            <button onClick={handleSearch} className="btn  me-2" type="button" style={{
-              backgroundColor: '#68B684',
-              color: 'white'
-            }}>
-              Buscar
-            </button>
-          </div>
+          {isAuthenticated && (
+            <div style={{ display:'flex' }}>
+              <input
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                className="form-control me-2"
+                type="search"
+                placeholder="¡Escribe tu Artista!"
+                aria-label="Search"
+                style={{ width: '900px', height: '40px' }}
+              />
+              <button onClick={handleSearch} className="btn  me-2" type="button" style={{ backgroundColor: '#68B684', color: 'white' }}>
+                Buscar
+              </button>
+            </div> 
+          )}
           <div style={{display:'flex'}}>
             {isAuthenticated ? <LogoutButton /> :<LoginButton />}
           </div>
