@@ -15,6 +15,12 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
     getTracks();
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg" style={{
       backgroundColor:'#539269'
@@ -52,17 +58,23 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
             </div>
           </div>
           {isAuthenticated && (
+            // Si no inicia sesion no aparece el buscador 
             <div style={{ display:'flex' }}>
               <input
                 value={keyword}
                 onChange={(event) => setKeyword(event.target.value)}
+                // se puede hacer la busqueda con la tecla entrer, no solo con el boton de buscar - Nelly
+                onKeyDown={handleKeyDown}
                 className="form-control me-2"
                 type="search"
                 placeholder="¡Escribe tu Artista!"
                 aria-label="Search"
                 style={{ width: '900px', height: '40px' }}
               />
-              <button onClick={handleSearch} className="btn  me-2" type="button" style={{ backgroundColor: '#68B684', color: 'white' }}>
+              <button onClick={handleSearch} className="btn  me-2" type="button" style={{ 
+                backgroundColor: '#68B684', 
+                color: 'white' 
+              }}>
                 Buscar
               </button>
             </div> 

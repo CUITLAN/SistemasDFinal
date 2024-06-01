@@ -27,6 +27,7 @@ const Home = () => {
                 height:'100%'
             }}>
                 <Navbar getTracks={getTracks} keyword={keyword} setKeyword={setKeyword} />
+                {/* Si no a iniciado sesion van aparecen las secciones de ver tu perfil - Nelly */}
                 {isAuthenticated ? (
                 <div style={{
                     display: 'flex',
@@ -65,6 +66,7 @@ const Home = () => {
                     </div>
                 </div>
                 ): (
+                    // Si no has iniciado sesion va aparecerer el siguiente mensaje -Nelly
                     <div style={{ 
                         display: 'flex', 
                         padding: '10px', 
