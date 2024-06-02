@@ -1,5 +1,7 @@
 import React from "react";
+import guardar from "../images/bookmark-plus-fill.svg";
 import "../App.css";
+import { useForm } from 'react-hook-form';
 
 const Card = ({ element }) => {
   function guardarCancion() {
