@@ -27,6 +27,7 @@ const Home = () => {
                 height:'100%'
             }}>
                 <Navbar getTracks={getTracks} keyword={keyword} setKeyword={setKeyword} />
+                {/* Si no a iniciado sesion van aparecen las secciones de ver tu perfil - Nelly */}
                 {isAuthenticated ? (
                 <div style={{
                     display: 'flex',
@@ -36,7 +37,7 @@ const Home = () => {
                         backgroundColor: '#68B684',
                         padding:'10px',
                         color: '#1C1018',
-                        height: '100vh'
+                        maxHeight: '90vh'
                     }}>
                         <section style={{
                             padding:'10px',
@@ -54,7 +55,11 @@ const Home = () => {
                     }}>
 
                         <section>
-                            <div className="container">
+                            {/* Le estamos dando la indicacion que en el contededor de las canciones solo se hace scroll */}
+                            <div className="container" style={{
+                                maxHeight: '88.5vh',
+                                overflow: 'auto'
+                            }}>
                                 <div className="row justify-content-evenly">
                                 {tracks.map((element) => {
                                     return <Card key={element.id} element={element} />;
@@ -65,6 +70,7 @@ const Home = () => {
                     </div>
                 </div>
                 ): (
+                    // Si no has iniciado sesion va aparecerer el siguiente mensaje -Nelly
                     <div style={{ 
                         display: 'flex', 
                         padding: '10px', 
