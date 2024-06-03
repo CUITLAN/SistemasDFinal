@@ -23,8 +23,8 @@ const Home = () => {
             <div  style={{
                 backgroundColor: '#1C1018',
                 color: '#95E06C',
-                width: '100%',
-                height:'100%'
+                width: '100vw',
+                height:'100vh'
             }}>
                 <Navbar getTracks={getTracks} keyword={keyword} setKeyword={setKeyword} />
                 {/* Si no a iniciado sesion van aparecen las secciones de ver tu perfil - Nelly */}
@@ -37,12 +37,14 @@ const Home = () => {
                         backgroundColor: '#68B684',
                         padding:'10px',
                         color: '#1C1018',
-                        height: '100vh'
+                        maxHeight: '90vh',
+                        width:'280px'
                     }}>
                         <section style={{
                             padding:'10px',
                             boxShadow: '2px 2px 1px  rgba(83, 146, 105, 0.9)',
-                            borderRadius: '15px'
+                            borderRadius: '15px',
+                            height: '100px'
                         }}>
                             <Profile />
                         </section>
@@ -55,7 +57,11 @@ const Home = () => {
                     }}>
 
                         <section>
-                            <div className="container">
+                            {/* Le estamos dando la indicacion que en el contededor de las canciones solo se hace scroll */}
+                            <div className="container" style={{
+                                maxHeight: '88.5vh',
+                                overflow: 'auto'
+                            }}>
                                 <div className="row justify-content-evenly">
                                 {tracks.map((element) => {
                                     return <Card key={element.id} element={element} />;
@@ -69,12 +75,14 @@ const Home = () => {
                     // Si no has iniciado sesion va aparecerer el siguiente mensaje -Nelly
                     <div style={{ 
                         display: 'flex', 
-                        padding: '10px', 
-                        color: '#094D92', 
-                        backgroundColor: 'white', 
-                        justifyContent: 'center'
+                        padding: '10px',  
+                        justifyContent: 'center',
+                        opacity: '0.5', 
+                        maxHeight: '100vh' 
                     }}>
-                        <h2>Por favor, inicia sesión para ver tu perfil.</h2>
+                        <h2 style={{
+                            marginTop: '270px'
+                        }}>Por favor, inicia sesión para ver tu perfil.</h2>
                     </div>
                 )}
             </div>
