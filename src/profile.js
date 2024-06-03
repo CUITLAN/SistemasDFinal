@@ -31,11 +31,41 @@ const Profile = () => {
 
   return (
     isAuthenticated && (
-      <div>
-        <img src={user.picture} alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-        <p>{user.sub}</p>
+      <div style={{
+        display:'flex',
+        flexDirection:'row', 
+        alignItems: 'center'
+      }}>
+        <div style={{
+          margin: '5px',
+          display: 'flex', 
+          alignItems: 'center',
+          marginRight: '10px',
+          height: '80px'
+        }}>
+          <img src={user.picture} alt={user.name} style={{
+            borderRadius: '50%',
+            width: '55px',
+            height: '55px'
+          }}/>
+        </div>
+        <div style={{
+          height: '100px',
+          justifyContent: 'center',
+          display: 'flex',
+          flexDirection: 'column', 
+          marginRight: '10px'
+        }}>
+          <h3 style={{
+            fontSize:'12px',
+            fontWeight: 'bold'
+          }}
+          >{user.name}</h3>
+          <p style={{
+            fontSize: '10px'
+          }}
+          >{user.email}</p>
+        </div>
       </div>
     )
   );
