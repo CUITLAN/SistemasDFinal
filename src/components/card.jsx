@@ -1,12 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import guardar from "../images/bookmark-plus-fill.svg";
 import "../App.css";
-import { useForm } from 'react-hook-form';
+import { playlistsdummy } from "../datadummy/playlistsdummy";
 
 const Card = ({ element }) => {
-  const guardarCancion = async () => {
+  const [playlistInput, setPlaylistInput] = useState(false);
+  const [nombrePlaylist, setNombrePlaylist] = useState(null);
+
+  function verPlaylists() {
+    console.log("aqui se ven las playlists");
+  }
+
+  // const guardarCancion = async () => {
+  //   const songData = {
+  //     playlist_id: 1, //Aca se agrega el platlist id dependiendo de lo escojido en el modal
+  //     song_id: element.id,
+  //     name: element.name,
+  //     artist: element.album.artists[0].name,
+  //     Release_Date: element.album.release_date,
+  //     Preview_Song: element.preview_url,
+  //     Image: element.album.images[0].url,
+  //   };
+
+  //   try {
+  //     const response = await fetch("http://localhost:3001/api/AddSong", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(songData), //Es mas facil definirlo como una  constante y solo traerla aca
+  //     });
+
+  //     if (response.ok) {
+  //       console.log("En efecto se guardo la cancion");
+  //     } else {
+  //       console.error(
+  //         "Error al guardarla pero es un error aca de los maquiavelicos"
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al realizar la peticion al back:", error);
+  //   }
+  // };
+
+  async function guardarCancion(idpleilist) {
     const songData = {
-      playlist_id: 1, //Aca se agrega el platlist id dependiendo de lo escojido en el modal
+      playlist_id: idpleilist, //Aca se agrega el platlist id dependiendo de lo escojido en el modal
       song_id: element.id,
       name: element.name,
       artist: element.album.artists[0].name,
@@ -15,34 +54,45 @@ const Card = ({ element }) => {
       Image: element.album.images[0].url,
     };
 
+    console.log(songData);
     try {
-      const response = await fetch("http://localhost:3001/api/AddSong", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(songData), //Es mas facil definirlo como una  constante y solo traerla aca
-      });
+      const response = true;
 
       if (response.ok) {
         console.log("En efecto se guardo la cancion");
       } else {
-        console.error("Error al guardarla pero es un error aca de los maquiavelicos");
+        console.error(
+          "Error al guardarla pero es un error aca de los maquiavelicos"
+        );
       }
     } catch (error) {
       console.error("Error al realizar la peticion al back:", error);
     }
-  };
+  }
+
+  function createPlaylist() {
+    setPlaylistInput(true);
+  }
+
+  function savePlaylist(){
+    setPlaylistInput(false);
+    console.log(nombrePlaylist);
+  }
 
   return (
-    // La llave o Id se está tomando del elemento
+    // La llave o Id se está tomando del elemento que es la cancion
     <div
       key={element.id}
       className="card justify-content-center gy-4 position-relative"
-      style={{ width: "24rem" }}
+      style={{ width: "20rem" }}
     >
-      <div className="icon-container" onClick={guardarCancion}>
-        {/* <img className="guardar-icon" src={guardar} /> */}
+      <button
+        type="button"
+        className="btn btn-primary icon-container bg-white border-white"
+        data-bs-target={`#modal${element.id}}`}
+        data-bs-toggle="modal"
+        onClick={verPlaylists}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="30"
@@ -56,22 +106,128 @@ const Card = ({ element }) => {
             d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5m6.5-11a.5.5 0 0 0-1 0V6H6a.5.5 0 0 0 0 1h1.5v1.5a.5.5 0 0 0 1 0V7H10a.5.5 0 0 0 0-1H8.5z"
           />
         </svg>
+      </button>
+      {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react */}
+      <div
+        class="modal fade"
+        id={`modal${element.id}}`}
+        tabindex="-1"
+        aria-labelledby="playlists"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-dialog-scrollable">
+          <div class="modal-content" style={{ backgroundColor: "#1C1018" }}>
+            <div class="modal-header">
+              <div className="flex w-100 text-end p-3">
+                <button
+                  type="button"
+                  class="btn-close bg-white"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+            </div>
+            {playlistInput ? (
+              <>
+                <div class="modal-body">
+                  <div style={{fontSize: 20, fontStyle: 'italic', color: 'white', marginBottom: 10}}>Crear playlist</div>
+                  <input type="text"
+                  class=" p-2 w-100"
+                  style={{backgroundColor: 'black', color: 'white'}}
+                  onChange={(event) => setNombrePlaylist(event.target.value)}
+                  placeholder="Nombre"
+                  />
+                </div>
+                <div class="modal-footer">
+                  <button
+                  type="button"
+                  class="btn btn-success"
+                  style={{ fontWeight: 400 }}
+                  onClick={savePlaylist}>
+                    Crear
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div class="modal-body">
+                  <div class="container mb-3 px-3">
+                  <div class=' pt-2 pb-4' style={{fontSize: 20, fontStyle: 'italic', color: 'white'}}>Mis playlist</div>
+                    {playlistsdummy ? (
+                      playlistsdummy.map((p) => {
+                        return (
+                          <div class="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4">
+                            <div class="col-auto d-flex align-items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="40"
+                                height="40"
+                                fill="black"
+                                class="bi bi-music-note-list p-2 rounded-1"
+                                style={{ backgroundColor: "rgb(83, 146, 105)" }}
+                                viewBox="0 0 16 16"
+                              >
+                                <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
+                                <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
+                                <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"
+                                />
+                              </svg>
+                              <label
+                                class="form-check-label mx-4 w-100 text-white pe-2"
+                                style={{ fontSize: 26 }}
+                              >
+                                {p.nombre}
+                              </label>
+                              <input
+                                class="form-check-input checkPlaylist btn-outline-success"
+                                type="checkbox"
+                                // aqui tengo que mandar el id de la playlist
+                                onClick={() => guardarCancion(p.nombre)}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className=" font-thin text-xl">
+                        Crea una playlist
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div class=" modal-footer flex w-100 text-end p-3">
+                  <button
+                    type="button"
+                    class="btn btn-success"
+                    style={{ fontWeight: 200 }}
+                    onClick={createPlaylist}
+                  >
+                    Nueva Playlist
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
       <div className="row align-items-center">
-        <div className="col-md-4 ">
+        <div className="col-md-4">
           <img
             src={element.album.images[0].url}
             className="img-fluid rounded-start"
             alt="..."
           />
         </div>
-        <div className="col-md-8">
+        <div className="col-md-8 p-1">
           <div className="card-body">
-            <h5 className="card-title">{element.name}</h5>
-            <p className="card-text">
-              {element.id} <br />
+            <h5 className="card-title pe-4">{element.name}</h5>
+            <p className="card-text p-1">
+              {/* {element.id} <br /> */}
               Artista: {element.album.artists[0].name} <br />
-              Lanzamiento: {element.album.release_date}
+              Released: {element.album.release_date}
               {/* Por aca debería de estar un botón para agregarlo a la playlist, y definir la playlist a la que se irán todo por id playlist y id del álbum */}
             </p>
             {/* Aca es lo del audio le puse con w de 100 pero se puede adaptar */}

@@ -51,3 +51,23 @@
   width: 25px;
   fill: blue; /* Esto funciona solo si el SVG se puede manipular con CSS */
 }
+
+.checkPlaylist{
+  width: 2em;
+  height: 2em;
+  border-radius: 100%;
+  border: 2px solid green; /* Para el borde del checkbox */
+  appearance: none; /* Remueve el estilo por defecto del checkbox */
+  -webkit-appearance: none; /* Remueve el estilo por defecto en Safari */
+  -moz-appearance: none; /* Remueve el estilo por defecto en Firefox */
+  outline: none;
+}
+
+.checkPlaylist:checked {
+  background-color: green; /* Color de fondo cuando está chequeado */
+}
+
+.textop{
+  font-size: 24px;
+  color: white;
+}
