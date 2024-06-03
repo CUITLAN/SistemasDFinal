@@ -1,51 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import guardar from "../images/bookmark-plus-fill.svg";
+import { useUserId } from "../profile";
 import "../App.css";
-import { playlistsdummy } from "../datadummy/playlistsdummy";
 
 const Card = ({ element }) => {
+  // use el session storage para agarrar el user id, el context me lo trae nulo
+  const user_id = sessionStorage.getItem("user_id");
+  const [playlists, setPlaylists] = useState([]);
+  const [error, setError] = useState(null);
   const [playlistInput, setPlaylistInput] = useState(false);
   const [nombrePlaylist, setNombrePlaylist] = useState(null);
 
-  function verPlaylists() {
-    console.log("aqui se ven las playlists");
+  // Esta funcion nos da las playlists del usuario
+  async function getPlaylists(id) {
+    try {
+      // acá pasamos como parametro el id en la ruta
+      const response = await fetch(
+        `http://localhost:3001/api/MyPlaylist/${id}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la solicitud: " + response.statusText);
+      }
+      const data = await response.json();
+
+      console.log(data);
+      // data es la repsuesta, se la asignamos a la constante de playlists
+      setPlaylists(data);
+    } catch (error) {
+      console.error("Error al obtener el perfil:", error);
+      setError(error.message);
+    } finally {
+      return <div>Loading...</div>;
+    }
   }
 
-  // const guardarCancion = async () => {
-  //   const songData = {
-  //     playlist_id: 1, //Aca se agrega el platlist id dependiendo de lo escojido en el modal
-  //     song_id: element.id,
-  //     name: element.name,
-  //     artist: element.album.artists[0].name,
-  //     Release_Date: element.album.release_date,
-  //     Preview_Song: element.preview_url,
-  //     Image: element.album.images[0].url,
-  //   };
-
-  //   try {
-  //     const response = await fetch("http://localhost:3001/api/AddSong", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(songData), //Es mas facil definirlo como una  constante y solo traerla aca
-  //     });
-
-  //     if (response.ok) {
-  //       console.log("En efecto se guardo la cancion");
-  //     } else {
-  //       console.error(
-  //         "Error al guardarla pero es un error aca de los maquiavelicos"
-  //       );
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al realizar la peticion al back:", error);
-  //   }
-  // };
+  useEffect(() => {
+    // se consiguen las playlists hasta que esté disponible el id del usuario
+    if (user_id) {
+      getPlaylists(user_id);
+    } else {
+      console.error("user_id is null");
+    }
+  }, []);
 
   async function guardarCancion(idpleilist) {
     const songData = {
-      playlist_id: idpleilist, //Aca se agrega el platlist id dependiendo de lo escojido en el modal
+      playlist_id: idpleilist,
       song_id: element.id,
       name: element.name,
       artist: element.album.artists[0].name,
@@ -54,9 +58,14 @@ const Card = ({ element }) => {
       Image: element.album.images[0].url,
     };
 
-    console.log(songData);
     try {
-      const response = true;
+      const response = await fetch("http://localhost:3001/api/AddSong", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(songData),
+      });
 
       if (response.ok) {
         console.log("En efecto se guardo la cancion");
@@ -74,10 +83,48 @@ const Card = ({ element }) => {
     setPlaylistInput(true);
   }
 
-  function savePlaylist(){
+  function savePlaylist() {
     setPlaylistInput(false);
     console.log(nombrePlaylist);
   }
+
+  // Este es el item de playlist en el modal
+
+  const PlaylistItem = ({item}) => {
+    <div class="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4">
+      <div class="col-auto d-flex align-items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="40"
+          height="40"
+          fill="black"
+          class="bi bi-music-note-list p-2 rounded-1"
+          style={{ backgroundColor: "rgb(83, 146, 105)" }}
+          viewBox="0 0 16 16"
+        >
+          <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
+          <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
+          <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
+          <path
+            fill-rule="evenodd"
+            d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"
+          />
+        </svg>
+        <label
+          class="form-check-label mx-4 w-100 text-white pe-2"
+          style={{ fontSize: 26 }}
+        >
+          {item.name}
+        </label>
+        <input
+          class="form-check-input checkPlaylist btn-outline-success"
+          type="checkbox"
+          // aqui tengo que mandar el id de la playlist
+          onClick={() => guardarCancion(item.nombre)}
+        />
+      </div>
+    </div>
+  };
 
   return (
     // La llave o Id se está tomando del elemento que es la cancion
@@ -91,7 +138,7 @@ const Card = ({ element }) => {
         className="btn btn-primary icon-container bg-white border-white"
         data-bs-target={`#modal${element.id}}`}
         data-bs-toggle="modal"
-        onClick={verPlaylists}
+        onClick={() => getPlaylists(user_id)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -130,20 +177,32 @@ const Card = ({ element }) => {
             {playlistInput ? (
               <>
                 <div class="modal-body">
-                  <div style={{fontSize: 20, fontStyle: 'italic', color: 'white', marginBottom: 10}}>Crear playlist</div>
-                  <input type="text"
-                  class=" p-2 w-100"
-                  style={{backgroundColor: 'black', color: 'white'}}
-                  onChange={(event) => setNombrePlaylist(event.target.value)}
-                  placeholder="Nombre"
+                  <div
+                    style={{
+                      fontSize: 20,
+                      fontStyle: "italic",
+                      color: "white",
+                      marginBottom: 10,
+                    }}
+                  >
+                    Crear playlist
+                  </div>
+                  {/* Aqui podemos crear una nueva playlist */}
+                  <input
+                    type="text"
+                    class=" p-2 w-100"
+                    style={{ backgroundColor: "black", color: "white" }}
+                    onChange={(event) => setNombrePlaylist(event.target.value)}
+                    placeholder="Nombre"
                   />
                 </div>
                 <div class="modal-footer">
                   <button
-                  type="button"
-                  class="btn btn-success"
-                  style={{ fontWeight: 400 }}
-                  onClick={savePlaylist}>
+                    type="button"
+                    class="btn btn-success"
+                    style={{ fontWeight: 400 }}
+                    onClick={savePlaylist}
+                  >
                     Crear
                   </button>
                 </div>
@@ -152,48 +211,22 @@ const Card = ({ element }) => {
               <>
                 <div class="modal-body">
                   <div class="container mb-3 px-3">
-                  <div class=' pt-2 pb-4' style={{fontSize: 20, fontStyle: 'italic', color: 'white'}}>Mis playlist</div>
-                    {playlistsdummy ? (
-                      playlistsdummy.map((p) => {
-                        return (
-                          <div class="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4">
-                            <div class="col-auto d-flex align-items-center">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="40"
-                                height="40"
-                                fill="black"
-                                class="bi bi-music-note-list p-2 rounded-1"
-                                style={{ backgroundColor: "rgb(83, 146, 105)" }}
-                                viewBox="0 0 16 16"
-                              >
-                                <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
-                                <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
-                                <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
-                                <path
-                                  fill-rule="evenodd"
-                                  d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"
-                                />
-                              </svg>
-                              <label
-                                class="form-check-label mx-4 w-100 text-white pe-2"
-                                style={{ fontSize: 26 }}
-                              >
-                                {p.nombre}
-                              </label>
-                              <input
-                                class="form-check-input checkPlaylist btn-outline-success"
-                                type="checkbox"
-                                // aqui tengo que mandar el id de la playlist
-                                onClick={() => guardarCancion(p.nombre)}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })
+                    <div
+                      class=" pt-2 pb-4"
+                      style={{
+                        fontSize: 20,
+                        fontStyle: "italic",
+                        color: "white",
+                      }}
+                    >
+                      Mis playlist
+                    </div>
+                      {/* Aquí se rendderizan las playlists */}
+                    {playlists.length > 0 ? (
+                      playlists.map((p) => <PlaylistItem item={p} />)
                     ) : (
-                      <div className=" font-thin text-xl">
-                        Crea una playlist
+                      <div className="font-thin text-xl text-white">
+                        ...
                       </div>
                     )}
                   </div>
