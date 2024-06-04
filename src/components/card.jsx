@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import guardar from "../images/bookmark-plus-fill.svg";
-import { useUserId } from "../profile";
+// import guardar from "../images/bookmark-plus-fill.svg";
+// import { useUserId } from "../profile";
 import "../App.css";
 
 const Card = ({ element }) => {

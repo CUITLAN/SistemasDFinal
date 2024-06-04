@@ -1,6 +1,6 @@
-import React, { useEffect, useState, createContext, useContext } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-
+import React, { useEffect, useState, createContext, useContext } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Link } from 'react-router-dom';
 const UserContext = createContext();
 
 const Profile = () => {
@@ -12,17 +12,15 @@ const Profile = () => {
       if (isAuthenticated) {
         try {
           // Registrar el usuario
-          const registerResponse = await fetch(
-            "http://localhost:3001/api/users",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                auth0_id: user.sub,
-                name: user.name,
-                email: user.email,
+          const registerResponse = await fetch('http://localhost:3001/api/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              auth0_id: user.sub,
+              name: user.name,
+              email: user.email,
               }),
             }
           );
@@ -32,12 +30,10 @@ const Profile = () => {
           }
 
           const registerData = await registerResponse.json();
-          console.log("Usuario registrado:", registerData);
+          console.log('Usuario registrado:', registerData);
 
           // Obtener el user_id basado en el auth0_id
-          const userResponse = await fetch(
-            `http://localhost:3001/api/MyUser/${user.sub}`
-          );
+          const userResponse = await fetch(`http://localhost:3001/api/MyUser/${user.sub}`);
 
           if (!userResponse.ok) {
             throw new Error(`HTTP error! status: ${userResponse.status}`);
@@ -101,7 +97,12 @@ const Profile = () => {
             </h3>
             <p style={{ fontSize: "10px" }}>{user.email}</p>
             <p>{`User ID: ${userId}` }</p>
+            
           </div>
+          <Link to={'/MyPlaylist'}>
+          <button type="button" class="btn btn-success">Mis PLaylist</button>
+          {/* Se que esto esta mal acomodado Nelly No me mates estoy aprendiendo   ahorita por la crisis ya como caiga */}
+          </Link>
         </div>
       )}
     </UserContext.Provider>
