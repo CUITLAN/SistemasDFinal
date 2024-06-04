@@ -1,7 +1,81 @@
 import React, { useState, useEffect } from "react";
-import guardar from "../images/bookmark-plus-fill.svg";
-import { useUserId } from "../profile";
 import "../App.css";
+
+// Este es el item de playlist en el modal
+
+const PlaylistItem = ({ item, elemento }) => {
+  async function guardarCancion(idpleilist) {
+    const songData = {
+      playlist_id: idpleilist,
+      song_id: elemento.id,
+      name: elemento.name,
+      artist: elemento.album.artists[0].name,
+      Release_Date: elemento.album.release_date,
+      Preview_Song: elemento.preview_url,
+      Image: elemento.album.images[0].url,
+    };
+
+    try {
+      const response = await fetch("http://localhost:3001/api/AddSong", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(songData),
+      });
+
+      if (response.ok) {
+        console.log("En efecto se guardo la cancion");
+      } else {
+        console.error(
+          "Error al guardarla pero es un error aca de los maquiavelicos"
+        );
+      }
+    } catch (error) {
+      console.error("Error al realizar la peticion al back:", error);
+    }
+  }
+
+  return (
+    <div
+      key={item.id}
+      className="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4"
+    >
+      {console.log("el item pasado:", item)}
+      <div className="col-auto d-flex align-items-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="40"
+          height="40"
+          fill="black"
+          class="bi bi-music-note-list p-2 rounded-1"
+          style={{ backgroundColor: "rgb(83, 146, 105)" }}
+          viewBox="0 0 16 16"
+        >
+          <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
+          <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
+          <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
+          <path
+            fill-rule="evenodd"
+            d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"
+          />
+        </svg>
+        <label
+          className="form-check-label mx-4 w-100 text-white pe-2"
+          style={{ fontSize: 26 }}
+        >
+          {item.name}
+        </label>
+        <input
+          className="form-check-input checkPlaylist btn-outline-success"
+          type="checkbox"
+          // aqui tengo que mandar el id de la playlist
+          onClick={() => guardarCancion(elemento.id)}
+        />
+      </div>
+    </div>
+  );
+};
 
 const Card = ({ element }) => {
   // use el session storage para agarrar el user id, el context me lo trae nulo
@@ -38,46 +112,28 @@ const Card = ({ element }) => {
     }
   }
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  if(isLoading){
+    return <div>Loading...</div>
+  }
+
   useEffect(() => {
     // se consiguen las playlists hasta que esté disponible el id del usuario
     if (user_id) {
-      getPlaylists(user_id);
+      setIsLoading(true); // Iniciar carga
+      getPlaylists(user_id)
+        .then(() => {
+          setIsLoading(false); // Finalizar carga
+        })
+        .catch((error) => {
+          setIsLoading(false); // Finalizar carga en caso de error
+          setError(error.message);
+        });
     } else {
       console.error("user_id is null");
     }
-  }, []);
-
-  async function guardarCancion(idpleilist) {
-    const songData = {
-      playlist_id: idpleilist,
-      song_id: element.id,
-      name: element.name,
-      artist: element.album.artists[0].name,
-      Release_Date: element.album.release_date,
-      Preview_Song: element.preview_url,
-      Image: element.album.images[0].url,
-    };
-
-    try {
-      const response = await fetch("http://localhost:3001/api/AddSong", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(songData),
-      });
-
-      if (response.ok) {
-        console.log("En efecto se guardo la cancion");
-      } else {
-        console.error(
-          "Error al guardarla pero es un error aca de los maquiavelicos"
-        );
-      }
-    } catch (error) {
-      console.error("Error al realizar la peticion al back:", error);
-    }
-  }
+  }, [user_id]);
 
   function createPlaylist() {
     setPlaylistInput(true);
@@ -87,44 +143,6 @@ const Card = ({ element }) => {
     setPlaylistInput(false);
     console.log(nombrePlaylist);
   }
-
-  // Este es el item de playlist en el modal
-
-  const PlaylistItem = ({item}) => {
-    <div class="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4">
-      <div class="col-auto d-flex align-items-center">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
-          fill="black"
-          class="bi bi-music-note-list p-2 rounded-1"
-          style={{ backgroundColor: "rgb(83, 146, 105)" }}
-          viewBox="0 0 16 16"
-        >
-          <path d="M12 13c0 1.105-1.12 2-2.5 2S7 14.105 7 13s1.12-2 2.5-2 2.5.895 2.5 2" />
-          <path fill-rule="evenodd" d="M12 3v10h-1V3z" />
-          <path d="M11 2.82a1 1 0 0 1 .804-.98l3-.6A1 1 0 0 1 16 2.22V4l-5 1z" />
-          <path
-            fill-rule="evenodd"
-            d="M0 11.5a.5.5 0 0 1 .5-.5H4a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 7H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5m0-4A.5.5 0 0 1 .5 3H8a.5.5 0 0 1 0 1H.5a.5.5 0 0 1-.5-.5"
-          />
-        </svg>
-        <label
-          class="form-check-label mx-4 w-100 text-white pe-2"
-          style={{ fontSize: 26 }}
-        >
-          {item.name}
-        </label>
-        <input
-          class="form-check-input checkPlaylist btn-outline-success"
-          type="checkbox"
-          // aqui tengo que mandar el id de la playlist
-          onClick={() => guardarCancion(item.nombre)}
-        />
-      </div>
-    </div>
-  };
 
   return (
     // La llave o Id se está tomando del elemento que es la cancion
@@ -156,7 +174,7 @@ const Card = ({ element }) => {
       </button>
       {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react */}
       <div
-        class="modal fade"
+        class="modal fade   "
         id={`modal${element.id}}`}
         tabindex="-1"
         aria-labelledby="playlists"
@@ -221,14 +239,22 @@ const Card = ({ element }) => {
                     >
                       Mis playlist
                     </div>
+                    <div>
                       {/* Aquí se rendderizan las playlists */}
-                    {playlists.length > 0 ? (
-                      playlists.map((p) => <PlaylistItem item={p} />)
-                    ) : (
-                      <div className="font-thin text-xl text-white">
-                        ...
-                      </div>
-                    )}
+                      {Array.isArray(playlists) && playlists.length > 0 ? (
+                        playlists.map((p) => (
+                          <PlaylistItem
+                            key={p.id}
+                            item={p}
+                            elemento={element}
+                          />
+                        ))
+                      ) : (
+                        <div className="font-thin text-xl text-white">
+                          No hay playlists
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div class=" modal-footer flex w-100 text-end p-3">
