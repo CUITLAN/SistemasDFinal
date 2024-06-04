@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Home from './Home.jsx';
 import {PagePrin} from './PagePrin.jsx';
+
+import MisPlaylist from "./components/MisPlaylist.js";
 // import Profile from "./profile.js";
 // import Navbar from "./components/NavBar.jsx";
 // import { useState } from "react";
@@ -41,6 +43,7 @@ function App() {
       <Routes>
         <Route path="/Albumi" element={<Home/>} />
         <Route path="/" element={<PagePrin/>} />
+        <Route path="/MyPLaylist" element={<MisPlaylist/>}/>
       </Routes>
     </>
 
