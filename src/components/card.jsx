@@ -17,7 +17,6 @@ const PlaylistItem = ({ itemPlaylist, elementoCancion}) => {
       Release_Date: elementoCancion.album.release_date,
       Image: elementoCancion.album.images[0].url,
     };
-    console.log(songData)
     try {
       const response = await fetch("http://localhost:3001/api/AddSong", {
         method: "POST",
@@ -117,9 +116,39 @@ const Card = ({ element }) => {
     setPlaylistInput(true);
   }
 
-  function savePlaylist() {
-    setPlaylistInput(false);
-    console.log(nombrePlaylist);
+  // ya se crean playlists -> rusty
+  async function savePlaylist() {
+    // el cuitlan puso en el query que es Name no name cuidao
+    const infoPlaylist = {
+      Name: nombrePlaylist,
+      user_id: parseInt(user_id)
+    }
+
+    try{
+      const response = await fetch('http://localhost:3001/api/AddPlaylist',{
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(infoPlaylist),
+      });
+      console.log(infoPlaylist)
+      // ocultamos el modal de nuevo
+      getPlaylists(user_id);
+      setPlaylistInput(false);
+      console.log(nombrePlaylist);
+
+      if (!response.ok) {
+        throw new Error("Error en la solicitud: " + response.statusText);
+      }
+    
+    } catch (error) {
+      console.error("Error al obtener el perfil:", error);
+      setError(error.message);
+    } finally {
+      return <div>Loading...</div>;
+    }
+  
   }
 
   return (
@@ -189,8 +218,9 @@ const Card = ({ element }) => {
                     class=" p-2 w-100"
                     style={{ backgroundColor: "black", color: "white" }}
                     onChange={(event) => setNombrePlaylist(event.target.value)}
-                    placeholder="Nombre"
+                    placeholder="Nombra tu playlist"
                   />
+                  {console.log(nombrePlaylist)}
                 </div>
                 <div class="modal-footer">
                   <button
