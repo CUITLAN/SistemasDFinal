@@ -3,61 +3,20 @@ import React, { useState, useEffect } from "react";
 // import { useUserId } from "../profile";
 import "../App.css";
 
-const Card = ({ element }) => {
-  // use el session storage para agarrar el user id, el context me lo trae nulo
-  const user_id = sessionStorage.getItem("user_id");
-  const [playlists, setPlaylists] = useState([]);
-  const [error, setError] = useState(null);
-  const [playlistInput, setPlaylistInput] = useState(false);
-  const [nombrePlaylist, setNombrePlaylist] = useState(null);
-
-  // Esta funcion nos da las playlists del usuario
-  async function getPlaylists(id) {
-    try {
-      // acá pasamos como parametro el id en la ruta
-      const response = await fetch(
-        `http://localhost:3001/api/MyPlaylist/${id}`,
-        {
-          method: "GET",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Error en la solicitud: " + response.statusText);
-      }
-      const data = await response.json();
-
-      console.log(data);
-      // data es la repsuesta, se la asignamos a la constante de playlists
-      setPlaylists(data);
-    } catch (error) {
-      console.error("Error al obtener el perfil:", error);
-      setError(error.message);
-    } finally {
-      return <div>Loading...</div>;
-    }
-  }
-
-  useEffect(() => {
-    // se consiguen las playlists hasta que esté disponible el id del usuario
-    if (user_id) {
-      getPlaylists(user_id);
-    } else {
-      console.error("user_id is null");
-    }
-  }, []);
-
-  async function guardarCancion(idpleilist) {
+// Este es el item de playlist en el modal
+//  itemPLaylist le pasa los valores de la playlist
+// Elemento cancion es la info de la cancion de donde abrimos el modal  -> Rusty
+const PlaylistItem = ({ itemPlaylist, elementoCancion}) => {
+  async function guardarCancion() {
     const songData = {
-      playlist_id: idpleilist,
-      song_id: element.id,
-      name: element.name,
-      artist: element.album.artists[0].name,
-      Release_Date: element.album.release_date,
-      Preview_Song: element.preview_url,
-      Image: element.album.images[0].url,
+      playlist_id: itemPlaylist.id,
+      song_id: elementoCancion.id,
+      name: elementoCancion.name,
+      artist: elementoCancion.album.artists[0].name,
+      Preview_Song: elementoCancion.preview_url,
+      Release_Date: elementoCancion.album.release_date,
+      Image: elementoCancion.album.images[0].url,
     };
-
     try {
       const response = await fetch("http://localhost:3001/api/AddSong", {
         method: "POST",
@@ -79,20 +38,12 @@ const Card = ({ element }) => {
     }
   }
 
-  function createPlaylist() {
-    setPlaylistInput(true);
-  }
-
-  function savePlaylist() {
-    setPlaylistInput(false);
-    console.log(nombrePlaylist);
-  }
-
-  // Este es el item de playlist en el modal
-
-  const PlaylistItem = ({item}) => {
-    <div class="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4">
-      <div class="col-auto d-flex align-items-center">
+  return (
+    <div
+      key={itemPlaylist.id}
+      className="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4"
+    >
+      <div className="col-auto d-flex align-items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="40"
@@ -111,20 +62,94 @@ const Card = ({ element }) => {
           />
         </svg>
         <label
-          class="form-check-label mx-4 w-100 text-white pe-2"
+          className="form-check-label mx-4 w-100 text-white pe-2"
           style={{ fontSize: 26 }}
         >
-          {item.name}
+          {itemPlaylist.name}
         </label>
         <input
-          class="form-check-input checkPlaylist btn-outline-success"
+          className="form-check-input checkPlaylist btn-outline-success"
           type="checkbox"
           // aqui tengo que mandar el id de la playlist
-          onClick={() => guardarCancion(item.nombre)}
+          onClick={() => guardarCancion()}
         />
       </div>
     </div>
-  };
+  );
+};
+
+const Card = ({ element }) => {
+  // use el session storage para agarrar el user id, el context me lo trae nulo
+  const user_id = sessionStorage.getItem("user_id");
+  const [playlists, setPlaylists] = useState([]);
+  const [error, setError] = useState(null);
+  const [playlistInput, setPlaylistInput] = useState(false);
+  const [nombrePlaylist, setNombrePlaylist] = useState(null);
+
+  
+  // Esta funcion nos da las playlists del usuario -> Rusty
+  async function getPlaylists(id) {
+    try {
+      // acá pasamos como parametro el id en la ruta
+      const response = await fetch(
+        `http://localhost:3001/api/MyPlaylist/${id}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la solicitud: " + response.statusText);
+      }
+      const data = await response.json();
+      // data es la repsuesta, se la asignamos a la constante de playlists
+      setPlaylists(data.playlists);
+    } catch (error) {
+      console.error("Error al obtener el perfil:", error);
+      setError(error.message);
+    } finally {
+      return <div>Loading...</div>;
+    }
+  }
+
+  function createPlaylist() {
+    setPlaylistInput(true);
+  }
+
+  // ya se crean playlists -> rusty
+  async function savePlaylist() {
+    // el cuitlan puso en el query que es Name no name cuidao
+    const infoPlaylist = {
+      Name: nombrePlaylist,
+      user_id: parseInt(user_id)
+    }
+
+    try{
+      const response = await fetch('http://localhost:3001/api/AddPlaylist',{
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(infoPlaylist),
+      });
+      console.log(infoPlaylist)
+      // ocultamos el modal de nuevo
+      getPlaylists(user_id);
+      setPlaylistInput(false);
+      console.log(nombrePlaylist);
+
+      if (!response.ok) {
+        throw new Error("Error en la solicitud: " + response.statusText);
+      }
+    
+    } catch (error) {
+      console.error("Error al obtener el perfil:", error);
+      setError(error.message);
+    } finally {
+      return <div>Loading...</div>;
+    }
+  
+  }
 
   return (
     // La llave o Id se está tomando del elemento que es la cancion
@@ -154,9 +179,9 @@ const Card = ({ element }) => {
           />
         </svg>
       </button>
-      {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react */}
+      {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react -> Rusty */}
       <div
-        class="modal fade"
+        class="modal fade   "
         id={`modal${element.id}}`}
         tabindex="-1"
         aria-labelledby="playlists"
@@ -193,8 +218,9 @@ const Card = ({ element }) => {
                     class=" p-2 w-100"
                     style={{ backgroundColor: "black", color: "white" }}
                     onChange={(event) => setNombrePlaylist(event.target.value)}
-                    placeholder="Nombre"
+                    placeholder="Nombra tu playlist"
                   />
+                  {console.log(nombrePlaylist)}
                 </div>
                 <div class="modal-footer">
                   <button
@@ -221,14 +247,22 @@ const Card = ({ element }) => {
                     >
                       Mis playlist
                     </div>
+                    <div>
                       {/* Aquí se rendderizan las playlists */}
-                    {playlists.length > 0 ? (
-                      playlists.map((p) => <PlaylistItem item={p} />)
-                    ) : (
-                      <div className="font-thin text-xl text-white">
-                        ...
-                      </div>
-                    )}
+                      {Array.isArray(playlists) && playlists.length > 0 ? (
+                        playlists.map((p) => (
+                          <PlaylistItem
+                            key={p.id}
+                            itemPlaylist={p}
+                            elementoCancion={element}
+                          />
+                        ))
+                      ) : (
+                        <div className="font-thin text-xl text-white">
+                          No hay playlists
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div class=" modal-footer flex w-100 text-end p-3">
