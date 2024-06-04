@@ -3,6 +3,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const LogoutButton = () => {
   const { logout } = useAuth0();
+
+  function cerrar(){
+    logout();
+    sessionStorage.clear();
+  }
   return (
     <div>
       <button type="button" 
@@ -15,7 +20,7 @@ const LogoutButton = () => {
         
       }}
       //className="btn btn-outline-primary" 
-      onClick={() => logout()}>
+      onClick={() => cerrar()}>
         Log-out
       </button>
     </div>
