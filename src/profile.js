@@ -7,6 +7,7 @@ const Profile = () => {
   const { user, isAuthenticated } = useAuth0();
   const [userId, setUserId] = useState(null);
 
+  // esto se supone ya jalaaaa ahhh
   useEffect(() => {
     const registerAndFetchUserId = async () => {
       if (isAuthenticated) {
