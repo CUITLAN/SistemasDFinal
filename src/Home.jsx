@@ -12,7 +12,7 @@ const Home = () => {
         try {
         let data = await fetch(`https://v1.nocodeapi.com/cuitlan/spotify/NLLeDlWExOvKCbvS/search?q=${keyword}&type=track`);   //Se toma el dato de el navbar
         let convertedData = await data.json();
-        console.log(convertedData.tracks.items);
+        // console.log(convertedData.tracks.items);
         setTracks(convertedData.tracks.items);
         } catch (error) {
         console.error("Error fetching tracks:", error);

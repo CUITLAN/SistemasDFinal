@@ -2,19 +2,20 @@ import React, { useState, useEffect } from "react";
 import "../App.css";
 
 // Este es el item de playlist en el modal
-
-const PlaylistItem = ({ item, elemento }) => {
-  async function guardarCancion(idpleilist) {
+//  itemPLaylist le pasa los valores de la playlist
+// Elemento cancion es la info de la cancion de donde abrimos el modal  -> Rusty
+const PlaylistItem = ({ itemPlaylist, elementoCancion}) => {
+  async function guardarCancion() {
     const songData = {
-      playlist_id: idpleilist,
-      song_id: elemento.id,
-      name: elemento.name,
-      artist: elemento.album.artists[0].name,
-      Release_Date: elemento.album.release_date,
-      Preview_Song: elemento.preview_url,
-      Image: elemento.album.images[0].url,
+      playlist_id: itemPlaylist.id,
+      song_id: elementoCancion.id,
+      name: elementoCancion.name,
+      artist: elementoCancion.album.artists[0].name,
+      Preview_Song: elementoCancion.preview_url,
+      Release_Date: elementoCancion.album.release_date,
+      Image: elementoCancion.album.images[0].url,
     };
-
+    console.log(songData)
     try {
       const response = await fetch("http://localhost:3001/api/AddSong", {
         method: "POST",
@@ -38,10 +39,9 @@ const PlaylistItem = ({ item, elemento }) => {
 
   return (
     <div
-      key={item.id}
+      key={itemPlaylist.id}
       className="form-check form-check-inline row w-100 align-items-center justify-content-center mb-4"
     >
-      {console.log("el item pasado:", item)}
       <div className="col-auto d-flex align-items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -64,13 +64,13 @@ const PlaylistItem = ({ item, elemento }) => {
           className="form-check-label mx-4 w-100 text-white pe-2"
           style={{ fontSize: 26 }}
         >
-          {item.name}
+          {itemPlaylist.name}
         </label>
         <input
           className="form-check-input checkPlaylist btn-outline-success"
           type="checkbox"
           // aqui tengo que mandar el id de la playlist
-          onClick={() => guardarCancion(elemento.id)}
+          onClick={() => guardarCancion()}
         />
       </div>
     </div>
@@ -85,7 +85,8 @@ const Card = ({ element }) => {
   const [playlistInput, setPlaylistInput] = useState(false);
   const [nombrePlaylist, setNombrePlaylist] = useState(null);
 
-  // Esta funcion nos da las playlists del usuario
+  
+  // Esta funcion nos da las playlists del usuario -> Rusty
   async function getPlaylists(id) {
     try {
       // acá pasamos como parametro el id en la ruta
@@ -100,10 +101,8 @@ const Card = ({ element }) => {
         throw new Error("Error en la solicitud: " + response.statusText);
       }
       const data = await response.json();
-
-      console.log(data);
       // data es la repsuesta, se la asignamos a la constante de playlists
-      setPlaylists(data);
+      setPlaylists(data.playlists);
     } catch (error) {
       console.error("Error al obtener el perfil:", error);
       setError(error.message);
@@ -111,29 +110,6 @@ const Card = ({ element }) => {
       return <div>Loading...</div>;
     }
   }
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  if(isLoading){
-    return <div>Loading...</div>
-  }
-
-  useEffect(() => {
-    // se consiguen las playlists hasta que esté disponible el id del usuario
-    if (user_id) {
-      setIsLoading(true); // Iniciar carga
-      getPlaylists(user_id)
-        .then(() => {
-          setIsLoading(false); // Finalizar carga
-        })
-        .catch((error) => {
-          setIsLoading(false); // Finalizar carga en caso de error
-          setError(error.message);
-        });
-    } else {
-      console.error("user_id is null");
-    }
-  }, [user_id]);
 
   function createPlaylist() {
     setPlaylistInput(true);
@@ -172,7 +148,7 @@ const Card = ({ element }) => {
           />
         </svg>
       </button>
-      {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react */}
+      {/* Esto es del modal de cancion, cuidado pq tiene clases de boostrap y de react -> Rusty */}
       <div
         class="modal fade   "
         id={`modal${element.id}}`}
@@ -245,8 +221,8 @@ const Card = ({ element }) => {
                         playlists.map((p) => (
                           <PlaylistItem
                             key={p.id}
-                            item={p}
-                            elemento={element}
+                            itemPlaylist={p}
+                            elementoCancion={element}
                           />
                         ))
                       ) : (
