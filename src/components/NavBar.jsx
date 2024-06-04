@@ -1,6 +1,5 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react"; 
-
 import LoginButton from "./loginButton.js";
 import LogoutButton from "./logOutButton.js";
 
@@ -79,6 +78,7 @@ const Navbar = ({ keyword, setKeyword, getTracks }) => {
               </button>
             </div> 
           )}
+          
           <div style={{display:'flex'}}>
             {isAuthenticated ? <LogoutButton /> :<LoginButton />}
           </div>
